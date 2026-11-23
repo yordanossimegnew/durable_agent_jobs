@@ -1,0 +1,50 @@
+# Full stack: Postgres + API + 2 workers + UI.   docker compose up --build
+# Kill a worker mid-job (docker compose kill worker-1) and watch the other one resume it.
+x-app: &app
+  build: .
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql://jobs:jobs@postgres:5432/durable_jobs
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: jobs
+      POSTGRES_PASSWORD: jobs
+      POSTGRES_DB: durable_jobs
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobs -d durable_jobs"]
+      interval: 2s
+      retries: 20
+
+  api:
+    <<: *app
+    ports:
+      - "8000:8000"
+
+  worker-1:
+    <<: *app
+    command: python main.py worker
+
+  worker-2:
+    <<: *app
+    command: python main.py worker
+
+  ui:
+    build: .
+    command: streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    ports:
+      - "8501:8501"
+    environment:
+      AGENT_API_URL: http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
