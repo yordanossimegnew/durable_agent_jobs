@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from sqlalchemy import (Column, DateTime, Float, ForeignKey, Index, Integer, MetaData, String, Table, Text,
-                        create_engine)
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, Integer, MetaData, String, Table, Text, create_engine
 from sqlalchemy.dialects.postgresql import JSONB as JSON
 from sqlalchemy.engine import Engine
 

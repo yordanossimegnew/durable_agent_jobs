@@ -1,6 +1,6 @@
 # Durable Agent Jobs
 
-[![tests](https://github.com/yordanossimegnew/durable_agent_jobs/actions/workflows/tests.yml/badge.svg)](https://github.com/yordanossimegnew/durable_agent_jobs/actions/workflows/tests.yml)
+[![tests](https://github.com/yordanossimegnew/durable_agent_jobs/actions/workflows/tests.yml/badge.svg)](https://github.com/yordanossimegnew/durable_agent_jobs/actions/workflows/tests.yml) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Long-running AI research jobs that **survive crashes, restarts and deploys**. Submit a topic,
 and an agent plans sub-questions, waits for you to approve the plan, researches each question
@@ -19,6 +19,13 @@ worker processes, a **FastAPI** API and a live **Streamlit** dashboard.
 | Plan approval | Worker crash → recovery | Finished report |
 |---|---|---|
 | ![Approval](docs/screenshots/approval.png) | ![Recovery](docs/screenshots/crash-recovery.png) | ![Report](docs/screenshots/report.png) |
+
+## Engineering highlights
+
+- Workers claim jobs with `SELECT … FOR UPDATE SKIP LOCKED` and hold a heartbeated lease. A killed worker's job is reclaimed by another one.
+- The LangGraph Postgres checkpointer saves state after every node, so a resumed job continues at the next unfinished step and finished steps never re-run.
+- Human-in-the-loop plan approval with `interrupt()`: the job parks in `waiting_approval` without holding a worker.
+- Retries at two levels: LangGraph `RetryPolicy` per node, and job-level requeue with backoff.
 
 ## Features
 

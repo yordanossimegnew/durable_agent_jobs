@@ -16,8 +16,8 @@ from typing import Callable
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
-from ..jobs import TERMINAL, InvalidTransition, JobStore, Worker, completed_steps, make_job_factory, make_store
 from ..agent import total_steps
+from ..jobs import TERMINAL, InvalidTransition, JobStore, Worker, completed_steps, make_job_factory, make_store
 from ..utils.config import Settings, load_settings
 from ..utils.logger import get_logger
 from .schemas import ApprovalRequest, HealthResponse, Job, JobDetail, JobRequest
@@ -48,9 +48,9 @@ def create_app(settings: Settings | None = None, store: JobStore | None = None,
             thread.start()
             embedded.append((worker, thread))
         yield
-        for worker, thread in embedded:
+        for worker, _thread in embedded:
             worker.stop_event.set()
-        for worker, thread in embedded:
+        for _worker, thread in embedded:
             thread.join(timeout=10)
 
     app = FastAPI(title="Durable Agent Jobs", version="1.0.0", lifespan=lifespan)
