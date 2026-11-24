@@ -1,5 +1,7 @@
 # Durable Agent Jobs
 
+[![tests](https://github.com/yordanossimegnew/durable_agent_jobs/actions/workflows/tests.yml/badge.svg)](https://github.com/yordanossimegnew/durable_agent_jobs/actions/workflows/tests.yml)
+
 Long-running AI research jobs that **survive crashes, restarts and deploys**. Submit a topic,
 and an agent plans sub-questions, waits for you to approve the plan, researches each question
 with web search, and writes a cited report. That can take minutes. Kill a worker halfway
